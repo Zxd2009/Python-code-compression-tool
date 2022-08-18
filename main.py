@@ -60,19 +60,21 @@ def cut(data): # 分离字符串与代码
         i += 1
     return ans
 
-def canint(x):
+def charType(x):  # 把字符分类
+    # 这样分类是因为，在 Python 中好像可以把中文当作
+    # 变量名，而字符串的引号被去掉了，所以这样应该没问题
+    operators = ['~','`','!','@','#','$','%','^','&','*','(',')','_','-','+','=','{','}','[',']','|','\\',':',';','<','>',',','.','?','/']
+    if x == ' ' or x == '	':
+        return 's'  # 空格或 Tab
+    if x in operators:
+        return 'o'  # 符号
     try:
         int(x)
+        return 'n'  # 数字
     except:
-        return False
-    return True
+        return 'l'  # 字母（指可以当变量名）
 
 def ys(data):  # 压缩掉代码多余的空格和注释
-    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                   'U', 'V', 'W', 'X', 'Y', 'Z', '_',  # 因为 '_' 可以作为变量名，所以放到这里
-               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                   'u', 'v', 'w', 'x', 'y', 'z']
-
     zs = False
     spcnt = -1  # 行首空格的数量，-1 代表不是行首
     ans = ''    # 最终的结果
@@ -95,16 +97,17 @@ def ys(data):  # 压缩掉代码多余的空格和注释
                 else:
                     spcnt += 4
             else:
+                # 判断这个空格应不应该被去掉
+                # 是最后一个就去掉，是第一个就保留
                 if i == len(data) - 1:
                     pass
                 elif len(ans) == 0:
                     ans += ' '
-                elif ans[len(ans) - 1] in letters and i < len(data) - 1 and data[i + 1] in letters:
-                    ans += ' '
-                elif canint(ans[len(ans) - 1]) and i < len(data) - 1 and data[i + 1] in letters:
-                    ans += ' '
-                elif ans[len(ans) - 1] and i < len(data) - 1 and canint(data[i + 1]):
-                    ans += ' '
+                else:
+                    a = charType(ans[len(ans) - 1])
+                    b = charType(data[i + 1])
+                    if a != 's' and b != 's' and a != 'o' and b != 'o':
+                        ans += ' '
         elif data[i] == '\r':
             ans += '	' * (spcnt // 4)
             spcnt = -1
