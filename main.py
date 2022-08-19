@@ -75,7 +75,7 @@ def charType(x):  # 把字符分类
         return 'l'  # 字母（指可以当变量名）
 
 def ys(data):  # 压缩掉代码多余的空格和注释
-    global spcnt  # 全局同步
+    global spcnt, kh  # 全局同步
     zs = False
     ans = ''    # 最终的结果
     i = 0
@@ -92,7 +92,9 @@ def ys(data):  # 压缩掉代码多余的空格和注释
             zs = True
         elif data[i] == ' ' or data[i] == '	':  # 一个是空格，一个是 Tab
             if spcnt != -1:
-                if data[i] == ' ':
+                if kh > 0:  # 上一条语句还没完成，行首不用缩进
+                    pass
+                elif data[i] == ' ':
                     spcnt += 1
                 else:
                     spcnt += 4
@@ -108,6 +110,12 @@ def ys(data):  # 压缩掉代码多余的空格和注释
                     b = charType(data[i + 1])
                     if a != 's' and b != 's' and a != 'o' and b != 'o':
                         ans += ' '
+        elif data[i] == '(' or data[i] == '[' or data[i] == '{':
+            kh += 1
+            ans += data[i]
+        elif data[i] == ')' or data[i] == ']' or data[i] == '}':
+            kh -= 1
+            ans += data[i]
         elif data[i] == '\r':
             spcnt = -1
         elif data[i] == '\n':
@@ -122,8 +130,9 @@ def ys(data):  # 压缩掉代码多余的空格和注释
     return ans
 
 def main(data):
-    global spcnt
+    global spcnt, kh
     spcnt = 0  # 行首空格的数量，-1 代表不是行首
+    kh = 0     # 还没被抵消的左括号数量，用来判断在不在一条语句内
 
     data = cut(data)
     lans = ''
@@ -131,7 +140,7 @@ def main(data):
         if len(data[i]) == 0:
             continue
         if data[i][0] == '\'' or data[i][0] == '"':  # 这一项是字符串
-            if spcnt == -1:
+            if spcnt == -1 or kh > 0:
                 lans += data[i]
             continue
         lans += ys(data[i])
