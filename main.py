@@ -75,8 +75,8 @@ def charType(x):  # 把字符分类
         return 'l'  # 字母（指可以当变量名）
 
 def ys(data):  # 压缩掉代码多余的空格和注释
+    global spcnt  # 全局同步
     zs = False
-    spcnt = -1  # 行首空格的数量，-1 代表不是行首
     ans = ''    # 最终的结果
     i = 0
     while i < len(data):
@@ -109,7 +109,6 @@ def ys(data):  # 压缩掉代码多余的空格和注释
                     if a != 's' and b != 's' and a != 'o' and b != 'o':
                         ans += ' '
         elif data[i] == '\r':
-            ans += '	' * (spcnt // 4)
             spcnt = -1
         elif data[i] == '\n':
             spcnt = 0
@@ -123,14 +122,17 @@ def ys(data):  # 压缩掉代码多余的空格和注释
     return ans
 
 def main(data):
+    global spcnt
+    spcnt = 0  # 行首空格的数量，-1 代表不是行首
+
     data = cut(data)
     lans = ''
-
     for i in range(len(data)):
         if len(data[i]) == 0:
             continue
         if data[i][0] == '\'' or data[i][0] == '"':  # 这一项是字符串
-            lans += data[i]
+            if spcnt == -1:
+                lans += data[i]
             continue
         lans += ys(data[i])
     return lans
