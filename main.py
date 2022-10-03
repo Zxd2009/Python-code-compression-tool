@@ -122,6 +122,22 @@ def ys(data):  # 压缩掉代码多余的空格和注释
             spcnt = 0
             if len(ans) == 0 or ans[len(ans) - 1] != '\n':
                 ans += '\n'
+        elif data[i] == '\\':
+            # 到行尾，直接把换行符吞掉
+            i += 1
+            while (data[i] == '\r' or data[i] == '\n') and i < len(data):
+                i += 1
+            # 代码复制到这里，因为可能要加空格
+            if i == len(data) - 1:
+                pass
+            elif len(ans) == 0:
+                ans += ' '
+            else:
+                a = charType(ans[len(ans) - 1])
+                b = charType(data[i + 1])
+                if a != 's' and b != 's' and a != 'o' and b != 'o':
+                    ans += ' '
+            continue
         else:
             ans += '	' * (spcnt // 4)
             spcnt = -1
