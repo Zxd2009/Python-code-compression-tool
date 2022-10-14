@@ -125,7 +125,7 @@ def ys(data):  # 压缩掉代码多余的空格和注释
         elif data[i] == '\\':
             # 到行尾，直接把换行符吞掉
             i += 1
-            while (data[i] == '\r' or data[i] == '\n') and i < len(data):
+            while (data[i] == '\r' or data[i] == '\n' or data == ' ' or data == '	') and i < len(data):
                 i += 1
             # 代码复制到这里，因为可能要加空格
             if i == len(data) - 1:
