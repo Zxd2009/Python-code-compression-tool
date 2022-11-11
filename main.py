@@ -7,63 +7,63 @@ def cut(data): # 分离字符串与代码
     i = 0         # 读取到的位置
 
     while i < len(data):
+        if data[i] == '\r':
+            continue
         if strType != '':  # 在字符串中
             if fxg:
-                ans[len(ans) - 1] += data[i]
+                if data[i] == '\n':
+                    ans[-1] = ans[-1][:(len(ans[-1]) - 1)]
+                else:
+                    ans[-1] += data[i]
                 fxg = False
             elif data[i] == '\\':
-                ans[len(ans) - 1] += '\\'
+                ans[-1] += '\\'
                 fxg = True
             elif len(strType) == 1 and i < len(data) - 1 and data[i] == strType:
-                ans[len(ans) - 1] += data[i]
+                ans[-1] += data[i]
                 ans.append('')
                 strType = ''
-            elif len(strType) == 3 and i < len(data) - 3 and data[i:(i + 2)] == strType:
-                ans[len(ans) - 1] += strType
+            elif len(strType) == 3 and i < len(data) - 3 and data[i:(i + 3)] == strType:
+                ans[-1] += strType
                 ans.append('')
+                strType = ''
                 i += 3
                 continue
             else:
-                ans[len(ans) - 1] += data[i]
+                ans[-1] += data[i]
         else:
             if zs:
-                if data[i] == '\r':
-                    continue
-                elif data[i] == '\n':
+                if data[i] == '\n':
                     zs = False
-                    cur = len(ans) - 1
-                    if len(ans[cur]) > 0 and ans[cur][len(ans[cur]) - 1] != '\n':
-                        ans[len(ans) - 1] += '\n'
+                    if len(ans[-1]) > 0 and ans[-1][-1] != '\n':
+                        ans.append('\n')
                     i += 1
                     continue
-                ans[len(ans) - 1] += data[i]
+                ans[-1] += data[i]
             # 这两个 elif 是匹配字符串
-            elif data[i] == '\'' or data[i] == '"':
-                strType = data[i]
-                ans.append(strType)
-            elif i < len(data) - 3 and (data[i:(i + 2)] == '\'\'\'' or data[i:(i + 2)] == '"""'):
+            elif i < len(data) - 3 and (data[i:(i + 3)] == '\'\'\'' or data[i:(i + 3)] == '"""'):
                 strType = data[i:(i + 3)]
                 ans.append(strType)
                 i += 3
                 continue
+            elif data[i] == '\'' or data[i] == '"':
+                strType = data[i]
+                ans.append(strType)
             elif data[i] == '#':
-                ans[len(ans) - 1] += '#'
+                ans.append('#')
                 zs = True
-            elif data[i] == '\r':
-                pass
             elif data[i] == '\n':
-                cur = len(ans) - 1
-                if len(ans[cur]) == 0 or ans[cur][len(ans[cur]) - 1] != '\n':
-                    ans[len(ans) - 1] += '\n'
+                if len(ans[-1]) == 0 or ans[-1][-1] != '\n':
+                    ans[-1] += '\n'
             else:
-                ans[len(ans) - 1] += data[i]
+                ans[-1] += data[i]
         i += 1
     return ans
 
 def charType(x):  # 把字符分类
     # 这样分类是因为，在 Python 中好像可以把中文当作
     # 变量名，而字符串的引号被去掉了，所以这样应该没问题
-    operators = ['~','`','!','@','#','$','%','^','&','*','(',')','_','-','+','=','{','}','[',']','|','\\',':',';','<','>',',','.','?','/']
+    operators = ['~','`','!','@','#','$','%','^','&','*','(',')','-','+','=','{','}','[',']','|','\\',':',';','<','>',',','.','?','/']
     if x == ' ' or x == '	':
         return 's'  # 空格或 Tab
     if x in operators:
