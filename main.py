@@ -161,7 +161,7 @@ def fg(data, recm):  # 分割代码，变成以语句为单位的列表
             elif data[i][j] == '\\':
                 # 把后面的空格和换行都吞掉
                 j += 1
-                while (data[i][j] == '\r' or data[i][j] == '\n' or data[i][j] == ' ' or data[i][j] == '	') and j < len(data[i]):
+                while j < len(data[i]) and (data[i][j] == '\r' or data[i][j] == '\n' or data[i][j] == ' ' or data[i][j] == '	'):
                     j += 1
                 j -= 1
                 if ans[curi][curj] != '':  # 人为分割元素
