@@ -8,6 +8,7 @@ def cut(data): # 分离字符串与代码
 
     while i < len(data):
         if data[i] == '\r':
+            i += 1
             continue
         if strType != '':  # 在字符串中
             if fxg:
